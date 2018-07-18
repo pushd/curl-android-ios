@@ -71,7 +71,14 @@ export STRIP=$TOOLCHAIN/bin/arm-linux-androideabi-strip
 export CHOST=$TOOLCHAIN/bin/arm-linux-androideabi
 
 #Configure cURL
+
 cd $CURLPATH
+
+if [ ! -s "$CURLPATH/src/tool_hugehelp.c" ]; then
+	echo "generating dummy hugehelp"
+	cp "$CURLPATH/src/tool_hugehelp.c.cvs" "$CURLPATH/src/tool_hugehelp.c"
+fi
+
 if [ ! -x "$CURLPATH/configure" ]; then
 	echo "Curl needs external tools to be compiled"
 	echo "Make sure you have autoconf, automake and libtool installed"
@@ -98,8 +105,8 @@ export LDFLAGS="-march=$ARCH -L$SCRIPTPATH/obj/local/armeabi-v7a"
 	--disable-shared \
 	--disable-verbose \
 	--enable-threaded-resolver \
-	--enable-libgcc \
-	--enable-ipv6
+	--disable-ipv6 \
+	--enable-libgcc
 
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
@@ -116,16 +123,18 @@ if [ $EXITCODE -ne 0 ]; then
 	exit $EXITCODE
 fi
 
+DESTDIR=$SCRIPTPATH/../prebuilt-with-ssl/android
+
 #Strip debug symbols and copy to the prebuilt folder
-PLATFORMS=(arm64-v8a x86_64 armeabi-v7a x86)
+PLATFORMS=(armeabi-v7a)
 DESTDIR=$SCRIPTPATH/../prebuilt-with-ssl/android
 
 for p in ${PLATFORMS[*]}; do
   mkdir -p $DESTDIR/$p
   STRIP=$($SCRIPTPATH/ndk-which strip $p)
 
-  SRC=$SCRIPTPATH/obj/local/$p/libcurl.a
-  DEST=$DESTDIR/$p/libcurl.a
+  SRC=$SCRIPTPATH/obj/local/$p/curl
+  DEST=$DESTDIR/$p/curl
 
   if [ -z "$STRIP" ]; then
     echo "WARNING: Could not find 'strip' for $p"
@@ -134,14 +143,6 @@ for p in ${PLATFORMS[*]}; do
     $STRIP $SRC --strip-debug -o $DEST
   fi
 done
-
-#Copying cURL headers
-if [ -d "$DESTDIR/include" ]; then
-	echo "Cleaning headers"
-	rm -rf "$DESTDIR/include"
-fi
-cp -R $CURLPATH/include $DESTDIR/
-rm $DESTDIR/include/curl/.gitignore
 
 cd $PWD
 exit 0

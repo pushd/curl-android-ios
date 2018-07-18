@@ -3,6 +3,7 @@ CURL_COMMON_CFLAGS := \
   -DDSO_DLFCN -DHAVE_DLFCN_H -DOPENSSL_NO_CAST -DOPENSSL_NO_CAMELLIA \
   -DOPENSSL_NO_IDEA -DOPENSSL_NO_MDC2 -DOPENSSL_NO_SEED -DOPENSSL_NO_WHIRLPOOL\
   -Wno-sign-compare -Wno-incompatible-pointer-types-discards-qualifiers
+
 CURL_COMMON_CFLAGS += \
   -DHAVE_CONFIG_H \
   -Wpointer-arith -Wwrite-strings -Wunused -Winline \
@@ -11,6 +12,7 @@ CURL_COMMON_CFLAGS += \
   -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement \
   -Wno-system-headers -Wno-typedef-redefinition -Wno-unused-variable \
   -Wno-unused-function
+
 CURL_CSOURCES := \
   amigaos.c asyn-ares.c asyn-thread.c base64.c conncache.c \
   connect.c content_encoding.c cookie.c curl_addrinfo.c curl_ctype.c curl_des.c \
@@ -34,7 +36,21 @@ CURL_CSOURCES := \
 	vauth/cram.c vauth/digest.c vauth/digest_sspi.c vauth/krb5_gssapi.c \
 	vauth/krb5_sspi.c vauth/ntlm_sspi.c vauth/ntlm.c vauth/oauth2.c \
 	vauth/spnego_gssapi.c vauth/spnego_sspi.c vauth/vauth.c
-CURL_LOCAL_SRC_FILES := $(addprefix ../../curl/lib/,$(CURL_CSOURCES))
+
+CURL_TOOL_SOURCES := \
+  slist_wc.c tool_cb_wrt.c tool_getparam.c tool_msgs.c tool_strdup.c \
+  tool_binmode.c tool_cfgable.c tool_getpass.c tool_operate.c tool_urlglob.c \
+  tool_bname.c tool_convert.c tool_help.c tool_operhlp.c tool_util.c \
+  tool_cb_dbg.c tool_dirhie.c tool_helpers.c tool_panykey.c tool_vms.c \
+  tool_cb_hdr.c tool_doswin.c tool_homedir.c tool_paramhlp.c tool_writeout.c \
+  tool_cb_prg.c tool_easysrc.c tool_libinfo.c tool_parsecfg.c tool_xattr.c \
+  tool_cb_rea.c tool_filetime.c tool_main.c tool_setopt.c \
+  tool_cb_see.c tool_formparse.c  tool_metalink.c tool_sleep.c tool_hugehelp.c
+
+CURL_LOCAL_SRC_FILES := \
+  $(addprefix ../../curl/lib/,$(CURL_CSOURCES)) \
+  $(addprefix ../../curl/src/,$(CURL_TOOL_SOURCES))
+
 CURL_LOCAL_C_INCLUDES += \
   $(LOCAL_PATH)/../../curl/include \
   $(LOCAL_PATH)/../../curl/lib \
