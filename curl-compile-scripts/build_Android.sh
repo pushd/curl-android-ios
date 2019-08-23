@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET=android-22
+TARGET=android-19
 
 real_path() {
 	[[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -93,7 +93,7 @@ if [ ! -x "$CURLPATH/configure" ]; then
 	fi
 fi
 
-export CFLAGS="--sysroot=$SYSROOT -march=$ARCH"
+export CFLAGS="--sysroot=$SYSROOT -march=$ARCH -mandroid -mthumb"
 export CPPFLAGS="$CFLAGS -I$TOOLCHAIN/include -DANDROID -DCURL_STATICLIB"
 export LIBS="-lssl -lcrypto"
 export LDFLAGS="-march=$ARCH -L$SCRIPTPATH/obj/local/armeabi-v7a"
@@ -105,7 +105,8 @@ export LDFLAGS="-march=$ARCH -L$SCRIPTPATH/obj/local/armeabi-v7a"
 	--disable-shared \
 	--disable-verbose \
 	--enable-threaded-resolver \
-	--disable-ipv6
+	--disable-ipv6 \
+	--enable-libgcc
 
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
